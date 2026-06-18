@@ -1,9 +1,14 @@
+# Auto-regenerates the airport + heliport datasets from OurAirports and
+# commits them into this repo's /data folder. The apps read the files
+# from raw.githubusercontent.com — no GitHub Pages needed.
+#
+# This file lives at: .github/workflows/update-data.yml
 name: Update datasets
 
 on:
   schedule:
-    - cron: "0 6 * * 1"
-  workflow_dispatch: {}
+    - cron: "0 6 * * 1"      # every Monday 06:00 UTC
+  workflow_dispatch: {}        # also lets you run it by hand
 
 permissions:
   contents: write
