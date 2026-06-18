@@ -41,6 +41,26 @@ AIRPORTS_CSV_URL = "https://davidmegginson.github.io/ourairports-data/airports.c
 AIRPORT_TYPES = {"small_airport", "medium_airport", "large_airport"}
 HELIPORT_TYPES = {"heliport"}
 
+# OurAirports `iso_region` looks like "US-UT". Map US regions to full
+# state names so searches like "Utah" or "Texas" match. (Non-US regions
+# get an empty state — city/country search still covers those.)
+US_STATES = {
+    "US-AL": "Alabama", "US-AK": "Alaska", "US-AZ": "Arizona", "US-AR": "Arkansas",
+    "US-CA": "California", "US-CO": "Colorado", "US-CT": "Connecticut", "US-DE": "Delaware",
+    "US-DC": "District of Columbia", "US-FL": "Florida", "US-GA": "Georgia", "US-HI": "Hawaii",
+    "US-ID": "Idaho", "US-IL": "Illinois", "US-IN": "Indiana", "US-IA": "Iowa",
+    "US-KS": "Kansas", "US-KY": "Kentucky", "US-LA": "Louisiana", "US-ME": "Maine",
+    "US-MD": "Maryland", "US-MA": "Massachusetts", "US-MI": "Michigan", "US-MN": "Minnesota",
+    "US-MS": "Mississippi", "US-MO": "Missouri", "US-MT": "Montana", "US-NE": "Nebraska",
+    "US-NV": "Nevada", "US-NH": "New Hampshire", "US-NJ": "New Jersey", "US-NM": "New Mexico",
+    "US-NY": "New York", "US-NC": "North Carolina", "US-ND": "North Dakota", "US-OH": "Ohio",
+    "US-OK": "Oklahoma", "US-OR": "Oregon", "US-PA": "Pennsylvania", "US-RI": "Rhode Island",
+    "US-SC": "South Carolina", "US-SD": "South Dakota", "US-TN": "Tennessee", "US-TX": "Texas",
+    "US-UT": "Utah", "US-VT": "Vermont", "US-VA": "Virginia", "US-WA": "Washington",
+    "US-WV": "West Virginia", "US-WI": "Wisconsin", "US-WY": "Wyoming",
+    "US-PR": "Puerto Rico", "US-VI": "U.S. Virgin Islands", "US-GU": "Guam",
+}
+
 
 def fetch_airports_csv(local_path: str | None) -> str:
     if local_path:
@@ -72,29 +92,38 @@ def build_records(csv_text: str):
             continue
 
         iata = (row.get("iata_code") or "").strip()
-        # Use the real ICAO field only — NOT the `ident` fallback, which
-        # for small US fields is a local/FAA code (e.g. "FA38"), not a
-        # true ICAO. Including it produced thousands of code-less
-        # seaplane bases / gliderports that cluttered the app.
+        # Real ICAO field. For AIRPORTS we deliberately do NOT fall back
+        # to `ident` (a local/FAA code like "FA38"), which produced junk
+        # seaplane bases / gliderports.
         icao = (row.get("icao_code") or "").strip()
+        ident = (row.get("ident") or "").strip()
 
-        # The app keys airports by IATA, so only include airports that
-        # actually have an IATA code. Heliports require a real ICAO.
+        # Airports are keyed by IATA, so require one.
         if rtype in AIRPORT_TYPES and not iata:
             continue
-        if rtype in HELIPORT_TYPES and not icao:
+        # Heliports: include any with a real ICAO OR a local/FAA
+        # identifier, so hospital helipads and EMS pads (which rarely
+        # have an ICAO) are included. The local code becomes its display
+        # code. This is what makes the heliport list comprehensive.
+        heli_code = icao or ident
+        if rtype in HELIPORT_TYPES and not heli_code:
             continue
 
         tz = tf.timezone_at(lng=lon, lat=lat) or "UTC"
 
+        iso_region = (row.get("iso_region") or "").strip()
+        state = US_STATES.get(iso_region, "")
+
         record = {
             "iata": iata,
-            "icao": icao,
+            "icao": icao if rtype in AIRPORT_TYPES else heli_code,
             "name": (row.get("name") or "").strip(),
             "latitude": lat,
             "longitude": lon,
             "timezone": tz,
             "country": (row.get("iso_country") or "").strip(),
+            "municipality": (row.get("municipality") or "").strip(),
+            "state": state,
         }
         (heliports if rtype in HELIPORT_TYPES else airports).append(record)
 
