@@ -1,6 +1,6 @@
 # Privacy Policy — AvClock
 
-_Last updated: June 13, 2026_
+_Last updated: July 5, 2026_
 
 AvClock ("the app") is designed to respect your privacy. **The app does not
 collect, store, or share any personal information.** This policy explains what
@@ -29,6 +29,23 @@ Administration (NOAA) at aviationweather.gov. The only information sent in that
 request is the airport's public identifier code. No personal or device
 information is included. NOAA's handling of requests is governed by its own
 policies.
+
+## Airport status data
+
+When you view an airport's status, the app fetches the Federal Aviation
+Administration's (FAA) public National Airspace System status feed at
+nasstatus.faa.gov. This request is not airport-specific — it retrieves the
+full nationwide feed, so no airport code or other information about you is
+sent. Airport amenity information (terminals, TSA PreCheck/CLEAR, lounges,
+etc.) is bundled with the app and cached on-device; showing it involves no
+network request at all.
+
+## Third-party links
+
+The App may link to third-party websites (for example, an independent TSA
+wait-time estimator) that open in your device's browser after you confirm.
+We do not control these sites, and once you leave the App, your interaction
+with them is governed by their own privacy policy, not this one.
 
 ## Purchases
 
