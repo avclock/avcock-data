@@ -30,6 +30,13 @@ request is the airport's public identifier code. No personal or device
 information is included. NOAA's handling of requests is governed by its own
 policies.
 
+## Local weather (WeatherKit)
+
+The app also shows general, plain-language weather conditions using Apple's
+WeatherKit. This sends the airport's public coordinates (not your personal
+location) to Apple to retrieve conditions. WeatherKit's handling of this
+request is governed by Apple's own privacy policy.
+
 ## Airport status data
 
 When you view an airport's status, the app fetches the Federal Aviation
