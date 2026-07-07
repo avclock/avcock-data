@@ -11,6 +11,10 @@ Outputs (into ./out):
   - clean_heliports.json  (heliports only)
   - manifest.json         (version + counts + URLs the apps read)
 
+Each record also carries optional "home_link" / "wikipedia_link" keys
+(from OurAirports' own columns of the same name) when OurAirports has
+them for that airport — omitted entirely when empty, not stored as "".
+
 OurAirports CSV has no timezone column, so we derive it from lat/lon
 with `timezonefinder` (matching how the original clean_airports.json
 was produced).
@@ -125,6 +129,16 @@ def build_records(csv_text: str):
             "municipality": (row.get("municipality") or "").strip(),
             "state": state,
         }
+        # Optional — omitted entirely when empty rather than storing ""
+        # for tens of thousands of records. The app's Airport model
+        # decodes a missing key as nil automatically (matches the
+        # `home_link`/`wikipedia_link` JSON keys its CodingKeys expect).
+        home_link = (row.get("home_link") or "").strip()
+        if home_link:
+            record["home_link"] = home_link
+        wikipedia_link = (row.get("wikipedia_link") or "").strip()
+        if wikipedia_link:
+            record["wikipedia_link"] = wikipedia_link
         (heliports if rtype in HELIPORT_TYPES else airports).append(record)
 
     return airports, heliports
