@@ -1,13 +1,13 @@
 {
-  "version": "2026.10.19.1133",
-  "generatedAt": "2026-10-19T11:33:30.757331+00:00",
+  "version": "2026.10.26.1151",
+  "generatedAt": "2026-10-26T11:51:57.211218+00:00",
   "source": "OurAirports (public domain)",
   "airports": {
     "url": "https://raw.githubusercontent.com/avclock/avcock-data/main/data/clean_airports.json",
-    "count": 8798
+    "count": 8799
   },
   "heliports": {
     "url": "https://raw.githubusercontent.com/avclock/avcock-data/main/data/clean_heliports.json",
-    "count": 23248
+    "count": 23260
   }
 }
